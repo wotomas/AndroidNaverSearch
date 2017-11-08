@@ -30,7 +30,9 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
   public interface View {
     Observable<Boolean> onPullToRefreshGesture();
     Observable<Integer> onLoadMore();
+    Observable<String> getQueryText();
 
+    void storeLastQueryTextInMemory(String text);
     void showRefreshSpinner(boolean shouldShow);
     void showToast(String text);
   }
@@ -44,14 +46,12 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
 
   @Override
   public void attachView(View view) {
-//    Log.d(TAG, "attachView(): " + view + " " + searchAction + " " + listInterface + " " + apiController + " " + searchAction.textSearchObservable());
-//    if (view == null || listInterface == null || apiController == null || searchAction == null || searchAction.textSearchObservable() == null) return;
     compositeDisposable = new CompositeDisposable();
 
     compositeDisposable.add(
         Observable.merge(
-            searchAction.textSearchObservable(),
-            view.onPullToRefreshGesture().flatMap(v -> searchAction.getCurrentString()))
+            searchAction.textSearchObservable().doOnNext(view::storeLastQueryTextInMemory),
+            view.onPullToRefreshGesture().flatMap(v -> view.getQueryText()))
             .doOnNext(v -> listInterface.clear())
             .doOnNext(query -> view.showRefreshSpinner(!Util.isEmpty(query)))
             .filter(query -> !Util.isEmpty(query))
@@ -77,7 +77,7 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
 
     compositeDisposable.add(
         view.onLoadMore()
-            .flatMap(page -> searchAction.getCurrentString()
+            .flatMap(page -> view.getQueryText()
                 .filter(query -> !Util.isEmpty(query))
                 .observeOn(Schedulers.io())
                 .flatMap(query -> {

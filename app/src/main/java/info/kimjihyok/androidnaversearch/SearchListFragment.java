@@ -8,7 +8,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,8 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   private ListInterface adapter;
   private Unbinder unbinder;
 
+  private String currentQueryString = "";
+
   private PublishSubject<Boolean> refreshSubject;
   private PublishSubject<Integer> loadMoreSubject;
 
@@ -58,9 +59,16 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setRetainInstance(true);
 
     if (getArguments() != null) {
       searchViewType = getArguments().getInt(SEARCH_TYPE_KEY, Config.WEB_SEARCH_TAB);
+    }
+
+    if (searchViewType == Config.WEB_SEARCH_TAB) {
+      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
+    } else {
+      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
     }
   }
 
@@ -76,9 +84,17 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     recyclerView.addOnScrollListener(new BaseEndlessRecyclerViewScrollListener(layoutManager, 5) {
       @Override
       public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-        loadMoreSubject.onNext(page);
+        int nextStartItem;
+        if (searchViewType == Config.WEB_SEARCH_TAB) {
+          nextStartItem = page * 20 + 1;
+        } else {
+          nextStartItem = page * 40 + 1;
+        }
+
+        loadMoreSubject.onNext(nextStartItem);
       }
     });
+    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
 
     if (layoutManager instanceof LinearLayoutManager) {
       recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), ((LinearLayoutManager) layoutManager).getOrientation()));
@@ -91,36 +107,31 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onStart() {
+    super.onStart();
 
-    if (searchViewType == Config.WEB_SEARCH_TAB) {
-      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
-    } else {
-      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
+    if (presenter == null) {  // this null check and presenter creation is due to rotation handling
+      presenter = new SearchListPresenter(adapter
+          , ((BaseActivity) getActivity()).getApiController()
+          , ((BaseActivity) getActivity()).getSearchAction()
+          , searchViewType);
     }
 
-    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
-    presenter = new SearchListPresenter(adapter
-        , ((BaseActivity) getActivity()).getApiController()
-        , ((BaseActivity) getActivity()).getSearchAction()
-        , searchViewType);
     presenter.attachView(this);
   }
 
+  @Override
+  public void onStop() {
+    super.onStop();
+    presenter.detachView();
+  }
 
   @Override
   public void onDestroyView() {
     super.onDestroyView();
     unbinder.unbind();
-    presenter.detachView();
     refreshSubject = null;
     loadMoreSubject = null;
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
     presenter = null;
   }
 
@@ -137,6 +148,16 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   @Override
   public Observable<Integer> onLoadMore() {
     return loadMoreSubject;
+  }
+
+  @Override
+  public Observable<String> getQueryText() {
+    return Observable.defer(() -> Observable.just(currentQueryString));
+  }
+
+  @Override
+  public void storeLastQueryTextInMemory(String text) {
+    this.currentQueryString = text;
   }
 
   @Override

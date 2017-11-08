@@ -1,13 +1,11 @@
 package info.kimjihyok.androidnaversearch.base;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import javax.inject.Inject;
 
@@ -81,11 +79,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
   @Override
   public Observable<String> textSearchObservable() {
     return textSearchSubject;
-  }
-
-  @Override
-  public Observable<String> getCurrentString() {
-    return Observable.defer(() -> Observable.just(searchViewAndroidActionBar.getQuery().toString()));
   }
 
   @Override
