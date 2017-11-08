@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +81,7 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     unbinder = ButterKnife.bind(this, rootView);
     refreshSubject = PublishSubject.create();
     loadMoreSubject = PublishSubject.create();
-    layoutManager = searchViewType == Config.WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2);
+    layoutManager = searchViewType == Config.WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter((RecyclerView.Adapter) adapter);

@@ -43,7 +43,7 @@ public class ImageSearchListAdapter extends RecyclerView.Adapter<ImageSearchList
   public void onBindViewHolder(ImageItemViewHolder holder, int position) {
     ImageResult searchResults = list.get(position);
 
-    holder.imageSearchTitle.setText(Util.getFormattedSpannable(searchResults.getTitle()));
+    holder.imageSearchTitle.setText(searchResults.getTitle());
     Picasso.with(context).load(searchResults.getThumbnailURL())
         .placeholder(R.drawable.progress_animation)
         .error(R.drawable.load_error_image)

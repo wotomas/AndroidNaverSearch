@@ -3,6 +3,7 @@ package info.kimjihyok.androidnaversearch.base;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 
 /**
  * Created by jkimab on 2017. 11. 8..
@@ -22,8 +23,8 @@ public abstract class BaseEndlessRecyclerViewScrollListener extends RecyclerView
     this.mLayoutManager = layoutManager;
     if (mLayoutManager instanceof LinearLayoutManager) {
       VISIBLE_THRESHOLD = threshold;
-    } else if (mLayoutManager instanceof GridLayoutManager) {
-      VISIBLE_THRESHOLD = threshold * ((GridLayoutManager) mLayoutManager).getSpanCount();
+    } else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
+      VISIBLE_THRESHOLD = threshold * ((StaggeredGridLayoutManager) mLayoutManager).getSpanCount();
     } else {
       throw new IllegalStateException("Unsupported type of layout manager!");
     }
@@ -46,8 +47,10 @@ public abstract class BaseEndlessRecyclerViewScrollListener extends RecyclerView
     int lastVisibleItemPosition = 0;
     int totalItemCount = mLayoutManager.getItemCount();
 
-    if (mLayoutManager instanceof GridLayoutManager) {
-      lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager).findLastVisibleItemPosition();
+    if (mLayoutManager instanceof StaggeredGridLayoutManager) {
+      int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
+
+      lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions);
     } else if (mLayoutManager instanceof LinearLayoutManager) {
       lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager).findLastVisibleItemPosition();
     } else {
