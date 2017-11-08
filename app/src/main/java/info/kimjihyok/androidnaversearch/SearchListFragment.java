@@ -17,20 +17,20 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import info.kimjihyok.androidnaversearch.adapter.ListInterface;
 import info.kimjihyok.androidnaversearch.adapter.WebSearchListAdapter;
+import info.kimjihyok.androidnaversearch.base.BaseActivity;
 import info.kimjihyok.androidnaversearch.base.BaseEndlessRecyclerViewScrollListener;
-import info.kimjihyok.androidnaversearch.model.WebSearch;
+import info.kimjihyok.androidnaversearch.presenter.SearchListPresenter;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by jkimab on 2017. 11. 7..
  */
 
-public class SearchListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class SearchListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SearchListPresenter.View {
   private static final String SEARCH_TYPE_KEY = "search_type";
-
-  // move
-  public static final int WEB_SEARCH_TAB = 0;
-  public static final int IMAGE_SEARCH_TAB = 1;
 
   @BindView(R.id.search_recycler_view) RecyclerView recyclerView;
   @BindView(R.id.swipe_container) SwipeRefreshLayout swipeRefreshLayout;
@@ -38,7 +38,11 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   private RecyclerView.LayoutManager layoutManager;
   private int searchViewType;
   private Unbinder unbinder;
-  private RecyclerView.Adapter adapter;
+  private ListInterface adapter;
+  private SearchListPresenter presenter;
+
+  private PublishSubject<Void> refreshSubject;
+  private PublishSubject<Void> loadMoreSubject;
 
   public static SearchListFragment newInstance(int page) {
     SearchListFragment fragment = new SearchListFragment();
@@ -53,19 +57,22 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     super.onCreate(savedInstanceState);
 
     if (getArguments() != null) {
-      searchViewType = getArguments().getInt(SEARCH_TYPE_KEY, WEB_SEARCH_TAB);
+      searchViewType = getArguments().getInt(SEARCH_TYPE_KEY, Config.WEB_SEARCH_TAB);
     }
 
     // TODO: check view type and set adapter accordingly
-    adapter = new WebSearchListAdapter(getFakeData(), getContext());
+    adapter = new WebSearchListAdapter(new ArrayList<>(), getContext());
+    presenter = new SearchListPresenter(adapter, ((BaseActivity) getActivity()).getApiController());
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_search_list, container, false);
     unbinder = ButterKnife.bind(this, rootView);
+    refreshSubject = PublishSubject.create();
+    loadMoreSubject = PublishSubject.create();
 
-    layoutManager = searchViewType == WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2);
+    layoutManager = searchViewType == Config.WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2);
 
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(layoutManager);
@@ -73,44 +80,45 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
       @Override
       public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
         // do load more! hide pull to refresh and add more fake data
-        swipeRefreshLayout.setRefreshing(false);
-        ((WebSearchListAdapter) adapter).addItems(getFakeData());\
+        loadMoreSubject.onNext(null);
       }
     });
 
-    recyclerView.setAdapter(adapter);
-
+    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
     swipeRefreshLayout.setOnRefreshListener(this);
     swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark, R.color.colorAccent);
 
-    swipeRefreshLayout.post(new Runnable() {
-      @Override
-      public void run() {
-        swipeRefreshLayout.setRefreshing(true); // remove this method when linking to presenter
-      }
-    });
-
+    presenter.attachView(this);
     return rootView;
   }
 
-
-  private List<WebSearch> getFakeData() {
-    List<WebSearch> fakeData = new ArrayList<>();
-    for(int i = 0; i < 20; i++) {
-      fakeData.add(new WebSearch());
-    }
-
-    return fakeData;
-  }
 
   @Override
   public void onDestroyView() {
     super.onDestroyView();
     unbinder.unbind();
+    presenter.detachView();
+    refreshSubject = null;
+    loadMoreSubject = null;
   }
 
   @Override
   public void onRefresh() {
-    // trigger event in presenter
+    refreshSubject.onNext(null);
+  }
+
+  @Override
+  public Observable<Void> onSwipeGesture() {
+    return refreshSubject;
+  }
+
+  @Override
+  public Observable<Void> onLoadMore() {
+    return loadMoreSubject;
+  }
+
+  @Override
+  public void showRefreshSpinner(boolean shouldShow) {
+    swipeRefreshLayout.setRefreshing(shouldShow);
   }
 }

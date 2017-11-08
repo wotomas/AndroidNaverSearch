@@ -7,22 +7,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.R;
-import info.kimjihyok.androidnaversearch.model.WebSearch;
+import info.kimjihyok.androidnaversearch.controller.model.WebResult;
 
 /**
  * Created by jkimab on 2017. 11. 8..
  */
 
-public class WebSearchListAdapter extends RecyclerView.Adapter<WebSearchListAdapter.WebItemViewHolder> {
-  private List<WebSearch> list;
+public class WebSearchListAdapter extends RecyclerView.Adapter<WebSearchListAdapter.WebItemViewHolder> implements ListInterface<WebResult> {
+  private List<WebResult> list;
   private Context context;
 
-  public WebSearchListAdapter(List<WebSearch> list, Context context) {
+  public WebSearchListAdapter(List<WebResult> list, Context context) {
     this.list = list;
     this.context = context;
   }
@@ -35,22 +36,42 @@ public class WebSearchListAdapter extends RecyclerView.Adapter<WebSearchListAdap
 
   @Override
   public void onBindViewHolder(WebItemViewHolder holder, int position) {
-    WebSearch searchResults = list.get(position);
+    WebResult searchResults = list.get(position);
 
-    holder.searchTitleTextView.setText("temp 1");
-    holder.searchDetailTextView.setText("temp 2");
-    holder.searchURLTextView.setText("temp 3");
+    holder.searchTitleTextView.setText(searchResults.getTitle());
+    holder.searchDetailTextView.setText(searchResults.getDescription());
+    holder.searchURLTextView.setText(searchResults.getLink());
   }
 
-  public void addItems(List<WebSearch> items) {
+  @Override
+  public int getItemCount() {
+    return list.size();
+  }
+
+  @Override
+  public void addAll(List<WebResult> items) {
     int originalSize = this.list.size();
     this.list.addAll(items);
     notifyItemRangeInserted(originalSize, items.size());
   }
 
   @Override
-  public int getItemCount() {
-    return list.size();
+  public void add(WebResult WebResult) {
+    int originalSize = this.list.size();
+    this.list.add(WebResult);
+    notifyItemInserted(originalSize + 1);
+  }
+
+  @Override
+  public void remove(int position) {
+    this.list.remove(position);
+    notifyItemRemoved(position);
+  }
+
+  @Override
+  public void clear() {
+    this.list.clear();
+    notifyDataSetChanged();
   }
 
   public class WebItemViewHolder extends RecyclerView.ViewHolder {

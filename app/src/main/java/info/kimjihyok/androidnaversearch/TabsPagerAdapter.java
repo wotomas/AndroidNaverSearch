@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import static info.kimjihyok.androidnaversearch.SearchListFragment.WEB_SEARCH_TAB;
 
 /**
  * Created by jkimab on 2017. 11. 7..
@@ -31,6 +30,6 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 
   @Override
   public CharSequence getPageTitle(int position) {
-    return position == WEB_SEARCH_TAB ? "WEB SEARCH" : "IMAGE SEARCH";
+    return position == Config.WEB_SEARCH_TAB ? "WEB SEARCH" : "IMAGE SEARCH";
   }
 }

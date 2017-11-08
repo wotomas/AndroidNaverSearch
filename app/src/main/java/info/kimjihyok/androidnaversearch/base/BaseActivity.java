@@ -8,12 +8,24 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 import info.kimjihyok.androidnaversearch.R;
+import info.kimjihyok.androidnaversearch.controller.ApiController;
+import info.kimjihyok.androidnaversearch.dagger.component.ActivityComponent;
+import info.kimjihyok.androidnaversearch.dagger.component.DaggerActivityComponent;
 
 public abstract class BaseActivity extends AppCompatActivity {
+  private ActivityComponent activityComponent;
+
+  @Inject ApiController apiController;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    activityComponent = DaggerActivityComponent.builder().applicationComponent(BaseApplication.getApplicationComponent()).build();
+    activityComponent.inject(this);
   }
 
   @Override
@@ -49,6 +61,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     });
 
     return super.onCreateOptionsMenu(menu);
+  }
+
+  public ApiController getApiController() {
+    return apiController;
   }
 
   protected abstract void onScreenChangeToLandscape();

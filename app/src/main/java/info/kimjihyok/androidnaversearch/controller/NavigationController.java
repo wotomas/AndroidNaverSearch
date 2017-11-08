@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch.helper;
+package info.kimjihyok.androidnaversearch.controller;
 
 import android.app.Activity;
 
@@ -7,7 +7,7 @@ import android.app.Activity;
  */
 
 
-public class NavigationHelper {
+public class NavigationController {
   public void openUrl(Activity activity, String url) {
     throw new IllegalStateException("Method not implemented!");
   }
