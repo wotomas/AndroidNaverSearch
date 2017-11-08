@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import info.kimjihyok.androidnaversearch.adapter.ImageSearchListAdapter;
 import info.kimjihyok.androidnaversearch.adapter.ListInterface;
 import info.kimjihyok.androidnaversearch.adapter.WebSearchListAdapter;
 import info.kimjihyok.androidnaversearch.base.BaseActivity;
@@ -62,9 +62,16 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
       searchViewType = getArguments().getInt(SEARCH_TYPE_KEY, Config.WEB_SEARCH_TAB);
     }
 
-    // TODO: check view type and set adapter accordingly
-    adapter = new WebSearchListAdapter(new ArrayList<>(), getContext());
-    presenter = new SearchListPresenter(adapter, ((BaseActivity) getActivity()).getApiController(), ((BaseActivity) getActivity()).getSearchAction());
+    if (searchViewType == Config.WEB_SEARCH_TAB) {
+      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext());
+    } else {
+      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
+    }
+
+    presenter = new SearchListPresenter(adapter
+        , ((BaseActivity) getActivity()).getApiController()
+        , ((BaseActivity) getActivity()).getSearchAction()
+        , searchViewType);
   }
 
   @Override
@@ -75,7 +82,6 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     loadMoreSubject = PublishSubject.create();
     layoutManager = searchViewType == Config.WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2);
 
-    recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setAdapter((RecyclerView.Adapter) adapter);
     recyclerView.addOnScrollListener(new BaseEndlessRecyclerViewScrollListener(layoutManager, 5) {

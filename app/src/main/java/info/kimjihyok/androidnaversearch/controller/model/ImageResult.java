@@ -46,19 +46,19 @@ public class ImageResult {
     this.thumbnailURL = thumbnailURL;
   }
 
-  public String getImageHeight() {
-    return imageHeight;
+  public int getImageHeight() {
+    return Integer.parseInt(imageHeight);
   }
 
-  public void setImageHeight(String imageHeight) {
-    this.imageHeight = imageHeight;
+  public void setImageHeight(int imageHeight) {
+    this.imageHeight = String.valueOf(imageHeight);
   }
 
-  public String getImageWidth() {
-    return imageWidth;
+  public int getImageWidth() {
+    return Integer.parseInt(imageWidth);
   }
 
-  public void setImageWidth(String imageWidth) {
-    this.imageWidth = imageWidth;
+  public void setImageWidth(int imageWidth) {
+    this.imageWidth = String.valueOf(imageWidth);
   }
 }

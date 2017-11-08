@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/image_search_thumbnail"
+        tools:layout_height="150dp"/>
+
+    <TextView
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/image_search_thumbnail"
+        android:id="@+id/image_search_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/font_medium"
+        tools:text="2016 new Sample We Story"/>
+</RelativeLayout>
