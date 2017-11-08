@@ -14,7 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.controller.NavigationController;
-import info.kimjihyok.androidnaversearch.controller.Util;
+import info.kimjihyok.androidnaversearch.Util;
 import info.kimjihyok.androidnaversearch.controller.model.WebResult;
 
 /**

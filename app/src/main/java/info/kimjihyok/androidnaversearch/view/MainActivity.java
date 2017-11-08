@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch;
+package info.kimjihyok.androidnaversearch.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.adapter.TabsPagerAdapter;
 import info.kimjihyok.androidnaversearch.base.BaseActivity;
 import q.rorbin.verticaltablayout.VerticalTabLayout;

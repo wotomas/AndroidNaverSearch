@@ -8,7 +8,7 @@ import info.kimjihyok.androidnaversearch.adapter.ListInterface;
 import info.kimjihyok.androidnaversearch.base.BasePresenter;
 import info.kimjihyok.androidnaversearch.base.SearchAction;
 import info.kimjihyok.androidnaversearch.controller.ApiController;
-import info.kimjihyok.androidnaversearch.controller.Util;
+import info.kimjihyok.androidnaversearch.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

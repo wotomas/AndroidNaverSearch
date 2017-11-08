@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch;
+package info.kimjihyok.androidnaversearch.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import info.kimjihyok.androidnaversearch.Config;
+import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.adapter.ImageSearchListAdapter;
 import info.kimjihyok.androidnaversearch.adapter.ListInterface;
 import info.kimjihyok.androidnaversearch.adapter.WebSearchListAdapter;
@@ -109,7 +111,10 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   public void onStart() {
     super.onStart();
 
-    if (presenter == null) {  // this null check and presenter creation is due to rotation handling
+    // this null check and presenter creation is due to rotation handling
+    // because the dependencies from activity points to zombie references after rotation.
+    // onStart() is called after onActivityCreated() from orientation change
+    if (presenter == null) {
       presenter = new SearchListPresenter(adapter
           , ((BaseActivity) getActivity()).getApiController()
           , ((BaseActivity) getActivity()).getSearchAction()

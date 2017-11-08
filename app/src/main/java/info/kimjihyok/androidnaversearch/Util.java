@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch.controller;
+package info.kimjihyok.androidnaversearch;
 
 import android.app.Activity;
 import android.support.annotation.Nullable;

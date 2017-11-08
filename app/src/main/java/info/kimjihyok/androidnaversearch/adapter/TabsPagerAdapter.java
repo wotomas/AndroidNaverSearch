@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import info.kimjihyok.androidnaversearch.Config;
-import info.kimjihyok.androidnaversearch.SearchListFragment;
+import info.kimjihyok.androidnaversearch.view.SearchListFragment;
 
 
 /**

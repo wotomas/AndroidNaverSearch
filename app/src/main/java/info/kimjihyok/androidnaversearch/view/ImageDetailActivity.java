@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch;
+package info.kimjihyok.androidnaversearch.view;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.adapter.ImagePagerAdapter;
 import info.kimjihyok.androidnaversearch.base.BaseActivity;
 
