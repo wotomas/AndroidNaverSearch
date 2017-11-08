@@ -3,6 +3,7 @@ package info.kimjihyok.androidnaversearch.dagger.component;
 import dagger.Component;
 import info.kimjihyok.androidnaversearch.base.BaseActivity;
 import info.kimjihyok.androidnaversearch.controller.ApiController;
+import info.kimjihyok.androidnaversearch.dagger.module.ActivityModule;
 import info.kimjihyok.androidnaversearch.dagger.scope.ActivityScope;
 
 /**
@@ -14,8 +15,9 @@ import info.kimjihyok.androidnaversearch.dagger.scope.ActivityScope;
     dependencies = {
         ApplicationComponent.class,
     }
-//    , modules = {
-//    }
+    , modules = {
+        ActivityModule.class
+    }
 )
 public interface ActivityComponent {
   void inject(BaseActivity baseActivity);

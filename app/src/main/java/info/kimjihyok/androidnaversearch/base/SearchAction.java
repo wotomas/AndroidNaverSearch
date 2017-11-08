@@ -9,5 +9,5 @@ import io.reactivex.Observable;
 public interface SearchAction {
   Observable<String> textSearchObservable();
   Observable<String> getCurrentString();
-  Observable<Void> clearSearchObservable();
+  Observable<Boolean> clearSearchObservable();
 }

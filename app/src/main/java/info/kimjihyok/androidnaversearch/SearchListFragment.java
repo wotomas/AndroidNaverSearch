@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -34,15 +33,14 @@ import io.reactivex.subjects.PublishSubject;
 
 public class SearchListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SearchListPresenter.View {
   private static final String SEARCH_TYPE_KEY = "search_type";
-
   @BindView(R.id.search_recycler_view) RecyclerView recyclerView;
   @BindView(R.id.swipe_container) SwipeRefreshLayout swipeRefreshLayout;
+  private int searchViewType;
 
   private RecyclerView.LayoutManager layoutManager;
-  private int searchViewType;
-  private Unbinder unbinder;
-  private ListInterface adapter;
   private SearchListPresenter presenter;
+  private ListInterface adapter;
+  private Unbinder unbinder;
 
   private PublishSubject<Boolean> refreshSubject;
   private PublishSubject<Integer> loadMoreSubject;
@@ -64,7 +62,7 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     if (searchViewType == Config.WEB_SEARCH_TAB) {
-      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext());
+      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
     } else {
       adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
     }
@@ -88,7 +86,6 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     recyclerView.addOnScrollListener(new BaseEndlessRecyclerViewScrollListener(layoutManager, 5) {
       @Override
       public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-        // do load more! hide pull to refresh and add more fake data
         loadMoreSubject.onNext(page);
       }
     });

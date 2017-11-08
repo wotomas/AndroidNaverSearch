@@ -7,28 +7,36 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import javax.inject.Inject;
 
 import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.controller.ApiController;
+import info.kimjihyok.androidnaversearch.controller.NavigationController;
 import info.kimjihyok.androidnaversearch.dagger.component.ActivityComponent;
 import info.kimjihyok.androidnaversearch.dagger.component.DaggerActivityComponent;
+import info.kimjihyok.androidnaversearch.dagger.module.ActivityModule;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
 public abstract class BaseActivity extends AppCompatActivity implements SearchAction {
   @Inject ApiController apiController;
+  @Inject NavigationController navigationController;
 
   private ActivityComponent activityComponent;
-  private PublishSubject<String> textSearchSubject;
   private SearchView searchViewAndroidActionBar;
+  private PublishSubject<String> textSearchSubject;
+  private PublishSubject<Boolean> closeButtonSubject;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    activityComponent = DaggerActivityComponent.builder().applicationComponent(BaseApplication.getApplicationComponent()).build();
+    activityComponent = DaggerActivityComponent.builder()
+        .applicationComponent(BaseApplication.getApplicationComponent())
+        .activityModule(new ActivityModule(this))
+        .build();
     activityComponent.inject(this);
   }
 
@@ -46,12 +54,14 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
   protected void onStart() {
     super.onStart();
     textSearchSubject = PublishSubject.create();
+    closeButtonSubject = PublishSubject.create();
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     textSearchSubject = null;
+    closeButtonSubject = null;
   }
 
   @Override
@@ -60,8 +70,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
   }
 
   @Override
-  public Observable<Void> clearSearchObservable() {
-    return null;
+  public Observable<Boolean> clearSearchObservable() {
+    return closeButtonSubject;
   }
 
   @Override
@@ -81,16 +91,16 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
 
       @Override
       public boolean onQueryTextChange(String newText) {
-        // do something, like changing view state to searching...
         return false;
+      }
+    });
+    searchViewAndroidActionBar.setOnClickListener(v -> {
+      if (v.getId() == R.id.search_close_btn) {
+        closeButtonSubject.onNext(true);
       }
     });
 
     return super.onCreateOptionsMenu(menu);
-  }
-
-  public ApiController getApiController() {
-    return apiController;
   }
 
   protected abstract void onScreenChangeToLandscape();
@@ -104,5 +114,13 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
 
   public SearchAction getSearchAction() {
     return this;
+  }
+
+  public NavigationController getNavigationController() {
+    return navigationController;
+  }
+
+  public ApiController getApiController() {
+    return apiController;
   }
 }

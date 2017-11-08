@@ -10,9 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 
 public class TabsPagerAdapter extends FragmentPagerAdapter {
-  // TODO: move constants to seperate config class
   private static final int TOTAL_TABS = 2;
-
 
   public TabsPagerAdapter(FragmentManager fm) {
     super(fm);

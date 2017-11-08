@@ -13,6 +13,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.R;
+import info.kimjihyok.androidnaversearch.controller.NavigationController;
 import info.kimjihyok.androidnaversearch.controller.Util;
 import info.kimjihyok.androidnaversearch.controller.model.WebResult;
 
@@ -23,10 +24,12 @@ import info.kimjihyok.androidnaversearch.controller.model.WebResult;
 public class WebSearchListAdapter extends RecyclerView.Adapter<WebSearchListAdapter.WebItemViewHolder> implements ListInterface<WebResult> {
   private List<WebResult> list;
   private Context context;
+  private NavigationController navigationController;
 
-  public WebSearchListAdapter(List<WebResult> list, Context context) {
+  public WebSearchListAdapter(List<WebResult> list, Context context, NavigationController navigationController) {
     this.list = list;
     this.context = context;
+    this.navigationController = navigationController;
   }
 
   @Override
@@ -42,6 +45,7 @@ public class WebSearchListAdapter extends RecyclerView.Adapter<WebSearchListAdap
     holder.searchTitleTextView.setText(Util.getFormattedSpannable(searchResults.getTitle()));
     holder.searchDetailTextView.setText(Util.getFormattedSpannable(searchResults.getDescription()));
     holder.searchURLTextView.setText(searchResults.getLink());
+    holder.searchURLTextView.setOnClickListener(v -> navigationController.openUrl(searchResults.getLink()));
   }
 
   @Override
