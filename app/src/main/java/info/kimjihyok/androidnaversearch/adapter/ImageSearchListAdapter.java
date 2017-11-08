@@ -11,11 +11,13 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.R;
+import info.kimjihyok.androidnaversearch.controller.NavigationController;
 import info.kimjihyok.androidnaversearch.controller.Util;
 import info.kimjihyok.androidnaversearch.controller.model.ImageResult;
 
@@ -25,12 +27,14 @@ import info.kimjihyok.androidnaversearch.controller.model.ImageResult;
 
 
 public class ImageSearchListAdapter extends RecyclerView.Adapter<ImageSearchListAdapter.ImageItemViewHolder> implements ListInterface<ImageResult> {
-  private List<ImageResult> list;
+  private ArrayList<ImageResult> list;
   private Context context;
+  private NavigationController navigationController;
 
-  public ImageSearchListAdapter(List<ImageResult> list, Context context) {
+  public ImageSearchListAdapter(ArrayList<ImageResult> list, Context context, NavigationController navigationController) {
     this.list = list;
     this.context = context;
+    this.navigationController = navigationController;
   }
 
   @Override
@@ -44,6 +48,8 @@ public class ImageSearchListAdapter extends RecyclerView.Adapter<ImageSearchList
     ImageResult searchResults = list.get(position);
 
     holder.imageSearchTitle.setText(searchResults.getTitle());
+    holder.imageSearchThumbnail.setOnClickListener(v
+        -> navigationController.openImageDetailScreen(position, list));
     Picasso.with(context).load(searchResults.getThumbnailURL())
         .placeholder(R.drawable.progress_animation)
         .error(R.drawable.load_error_image)

@@ -68,7 +68,7 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     if (searchViewType == Config.WEB_SEARCH_TAB) {
       adapter = new WebSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
     } else {
-      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
+      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
     }
   }
 
@@ -102,7 +102,6 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
 
     swipeRefreshLayout.setOnRefreshListener(this);
     swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark, R.color.colorAccent);
-
     return rootView;
   }
 

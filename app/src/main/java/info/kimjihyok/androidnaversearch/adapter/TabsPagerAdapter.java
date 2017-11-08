@@ -1,8 +1,11 @@
-package info.kimjihyok.androidnaversearch;
+package info.kimjihyok.androidnaversearch.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import info.kimjihyok.androidnaversearch.Config;
+import info.kimjihyok.androidnaversearch.SearchListFragment;
 
 
 /**
