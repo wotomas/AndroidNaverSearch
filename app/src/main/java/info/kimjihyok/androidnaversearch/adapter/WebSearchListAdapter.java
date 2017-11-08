@@ -2,6 +2,9 @@ package info.kimjihyok.androidnaversearch.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.R;
+import info.kimjihyok.androidnaversearch.controller.TextUtil;
 import info.kimjihyok.androidnaversearch.controller.model.WebResult;
 
 /**
@@ -38,8 +42,8 @@ public class WebSearchListAdapter extends RecyclerView.Adapter<WebSearchListAdap
   public void onBindViewHolder(WebItemViewHolder holder, int position) {
     WebResult searchResults = list.get(position);
 
-    holder.searchTitleTextView.setText(searchResults.getTitle());
-    holder.searchDetailTextView.setText(searchResults.getDescription());
+    holder.searchTitleTextView.setText(TextUtil.getFormattedSpannable(searchResults.getTitle()));
+    holder.searchDetailTextView.setText(TextUtil.getFormattedSpannable(searchResults.getDescription()));
     holder.searchURLTextView.setText(searchResults.getLink());
   }
 

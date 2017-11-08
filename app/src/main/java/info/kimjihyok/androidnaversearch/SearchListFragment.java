@@ -4,12 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +43,8 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
   private ListInterface adapter;
   private SearchListPresenter presenter;
 
-  private PublishSubject<Void> refreshSubject;
-  private PublishSubject<Void> loadMoreSubject;
+  private PublishSubject<Boolean> refreshSubject;
+  private PublishSubject<Integer> loadMoreSubject;
 
   public static SearchListFragment newInstance(int page) {
     SearchListFragment fragment = new SearchListFragment();
@@ -62,7 +64,7 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
 
     // TODO: check view type and set adapter accordingly
     adapter = new WebSearchListAdapter(new ArrayList<>(), getContext());
-    presenter = new SearchListPresenter(adapter, ((BaseActivity) getActivity()).getApiController());
+    presenter = new SearchListPresenter(adapter, ((BaseActivity) getActivity()).getApiController(), ((BaseActivity) getActivity()).getSearchAction());
   }
 
   @Override
@@ -71,20 +73,23 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     unbinder = ButterKnife.bind(this, rootView);
     refreshSubject = PublishSubject.create();
     loadMoreSubject = PublishSubject.create();
-
     layoutManager = searchViewType == Config.WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new GridLayoutManager(getContext(), 2);
 
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
     recyclerView.addOnScrollListener(new BaseEndlessRecyclerViewScrollListener(layoutManager, 5) {
       @Override
       public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
         // do load more! hide pull to refresh and add more fake data
-        loadMoreSubject.onNext(null);
+        loadMoreSubject.onNext(page);
       }
     });
 
-    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
+    if (layoutManager instanceof LinearLayoutManager) {
+      recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), ((LinearLayoutManager) layoutManager).getOrientation()));
+    }
+
     swipeRefreshLayout.setOnRefreshListener(this);
     swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark, R.color.colorAccent);
 
@@ -104,21 +109,26 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
 
   @Override
   public void onRefresh() {
-    refreshSubject.onNext(null);
+    refreshSubject.onNext(true);
   }
 
   @Override
-  public Observable<Void> onSwipeGesture() {
+  public Observable<Boolean> onPullToRefreshGesture() {
     return refreshSubject;
   }
 
   @Override
-  public Observable<Void> onLoadMore() {
+  public Observable<Integer> onLoadMore() {
     return loadMoreSubject;
   }
 
   @Override
   public void showRefreshSpinner(boolean shouldShow) {
     swipeRefreshLayout.setRefreshing(shouldShow);
+  }
+
+  @Override
+  public void showToast(String text) {
+    Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
   }
 }

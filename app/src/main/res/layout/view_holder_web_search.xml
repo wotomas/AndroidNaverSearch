@@ -3,27 +3,32 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:padding="16dp">
+              android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/search_result_title"
+        android:padding="@dimen/activity_horizontal_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="title"/>
-
+        android:textSize="@dimen/font_large"
+        tools:text="Vimeo Nokia N8 sample video"/>
 
     <TextView
         android:id="@+id/search_result_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="detail"/>
-
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:textSize="@dimen/font_medium"
+        tools:text="This is the first HD video sample captured on the upcoming Nokia N8, shot in 720p. This amazing footage of a dancer on a rooftop has not been enhanced or tweaked"/>
 
     <TextView
         android:id="@+id/search_result_url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="URL"/>
+        android:padding="@dimen/activity_horizontal_margin"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/font_normal"
+        tools:text="https://vimeo.com/11266224"/>
 
 </LinearLayout>

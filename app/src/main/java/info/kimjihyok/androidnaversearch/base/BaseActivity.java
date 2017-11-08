@@ -14,11 +14,15 @@ import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.controller.ApiController;
 import info.kimjihyok.androidnaversearch.dagger.component.ActivityComponent;
 import info.kimjihyok.androidnaversearch.dagger.component.DaggerActivityComponent;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
-public abstract class BaseActivity extends AppCompatActivity {
-  private ActivityComponent activityComponent;
-
+public abstract class BaseActivity extends AppCompatActivity implements SearchAction {
   @Inject ApiController apiController;
+
+  private ActivityComponent activityComponent;
+  private PublishSubject<String> textSearchSubject;
+  private SearchView searchViewAndroidActionBar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,17 +43,39 @@ public abstract class BaseActivity extends AppCompatActivity {
   }
 
   @Override
+  protected void onStart() {
+    super.onStart();
+    textSearchSubject = PublishSubject.create();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    textSearchSubject = null;
+  }
+
+  @Override
+  public Observable<String> textSearchObservable() {
+    return textSearchSubject;
+  }
+
+  @Override
+  public Observable<Void> clearSearchObservable() {
+    return null;
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.search_view_menu, menu);
     MenuItem searchViewItem = menu.findItem(R.id.action_search);
 
-    final SearchView searchViewAndroidActionBar = (SearchView) searchViewItem.getActionView();
+    searchViewAndroidActionBar = (SearchView) searchViewItem.getActionView();
     searchViewAndroidActionBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {
         searchViewAndroidActionBar.clearFocus();
-        onTextSearch(query);
+        textSearchSubject.onNext(query);
         return true;
       }
 
@@ -71,5 +97,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   protected abstract void onScreenChangeToPortrait();
 
-  protected abstract void onTextSearch(String query);
+  @Override
+  public Observable<String> getCurrentString() {
+    return Observable.defer(() -> Observable.just(searchViewAndroidActionBar.getQuery().toString()));
+  }
+
+  public SearchAction getSearchAction() {
+    return this;
+  }
 }

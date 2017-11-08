@@ -8,6 +8,8 @@ import android.support.v4.view.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.base.BaseActivity;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by jkimab on 2017. 11. 6..
@@ -15,9 +17,9 @@ import info.kimjihyok.androidnaversearch.base.BaseActivity;
 
 public class MainActivity extends BaseActivity {
   private static final String TAG = "MainActivity";
-
   @BindView(R.id.pager) ViewPager viewPager;
   @BindView(R.id.tabs) TabLayout tabs;
+
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class MainActivity extends BaseActivity {
     tabs.setupWithViewPager(viewPager);
   }
 
+
   @Override
   protected void onScreenChangeToLandscape() {
 
@@ -39,8 +42,4 @@ public class MainActivity extends BaseActivity {
 
   }
 
-  @Override
-  protected void onTextSearch(String query) {
-
-  }
 }
