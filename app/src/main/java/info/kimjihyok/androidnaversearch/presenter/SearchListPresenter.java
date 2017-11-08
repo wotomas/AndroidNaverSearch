@@ -44,32 +44,35 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
 
   @Override
   public void attachView(View view) {
+//    Log.d(TAG, "attachView(): " + view + " " + searchAction + " " + listInterface + " " + apiController + " " + searchAction.textSearchObservable());
+//    if (view == null || listInterface == null || apiController == null || searchAction == null || searchAction.textSearchObservable() == null) return;
     compositeDisposable = new CompositeDisposable();
 
-    Observable.merge(
-          searchAction.textSearchObservable(),
-          view.onPullToRefreshGesture().flatMap(v -> searchAction.getCurrentString()))
-        .doOnNext(v -> listInterface.clear())
-        .doOnNext(query -> view.showRefreshSpinner(!Util.isEmpty(query)))
-        .filter(query -> !Util.isEmpty(query))
-        .flatMap(query -> {
-          if (currentSearchMode == Config.WEB_SEARCH_TAB) {
-            return apiController.getWebSearchList(query, 20, 1);
-          } else {
-            return apiController.getImageSearchList(query, 40, 1);
-          }
-        })
-        .flatMap(webSearchResult -> Observable.fromIterable(webSearchResult.getItems()))
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(onNext -> {
-          view.showRefreshSpinner(false);
-          listInterface.add(onNext);
-        }, onError -> {
-          view.showRefreshSpinner(false);
-          view.showToast("Error!");
-          if (BuildConfig.DEBUG) Log.e(TAG, "attachView() ", onError);
-        });
+    compositeDisposable.add(
+        Observable.merge(
+            searchAction.textSearchObservable(),
+            view.onPullToRefreshGesture().flatMap(v -> searchAction.getCurrentString()))
+            .doOnNext(v -> listInterface.clear())
+            .doOnNext(query -> view.showRefreshSpinner(!Util.isEmpty(query)))
+            .filter(query -> !Util.isEmpty(query))
+            .flatMap(query -> {
+              if (currentSearchMode == Config.WEB_SEARCH_TAB) {
+                return apiController.getWebSearchList(query, 20, 1);
+              } else {
+                return apiController.getImageSearchList(query, 40, 1);
+              }
+            })
+            .flatMap(webSearchResult -> Observable.fromIterable(webSearchResult.getItems()))
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(onNext -> {
+              view.showRefreshSpinner(false);
+              listInterface.add(onNext);
+            }, onError -> {
+              view.showRefreshSpinner(false);
+              view.showToast("Error!");
+              if (BuildConfig.DEBUG) Log.e(TAG, "attachView() ", onError);
+            }));
 
 
     compositeDisposable.add(

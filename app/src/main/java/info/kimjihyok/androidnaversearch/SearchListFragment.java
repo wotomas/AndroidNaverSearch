@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import io.reactivex.subjects.PublishSubject;
  */
 
 public class SearchListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, SearchListPresenter.View {
+  private static final String TAG = "SearchListFragment";
   private static final String SEARCH_TYPE_KEY = "search_type";
   @BindView(R.id.search_recycler_view) RecyclerView recyclerView;
   @BindView(R.id.swipe_container) SwipeRefreshLayout swipeRefreshLayout;
@@ -60,17 +62,6 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     if (getArguments() != null) {
       searchViewType = getArguments().getInt(SEARCH_TYPE_KEY, Config.WEB_SEARCH_TAB);
     }
-
-    if (searchViewType == Config.WEB_SEARCH_TAB) {
-      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
-    } else {
-      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
-    }
-
-    presenter = new SearchListPresenter(adapter
-        , ((BaseActivity) getActivity()).getApiController()
-        , ((BaseActivity) getActivity()).getSearchAction()
-        , searchViewType);
   }
 
   @Override
@@ -82,7 +73,6 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     layoutManager = searchViewType == Config.WEB_SEARCH_TAB ? new LinearLayoutManager(getContext()) : new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
 
     recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
     recyclerView.addOnScrollListener(new BaseEndlessRecyclerViewScrollListener(layoutManager, 5) {
       @Override
       public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -97,8 +87,25 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     swipeRefreshLayout.setOnRefreshListener(this);
     swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark, R.color.colorAccent);
 
-    presenter.attachView(this);
     return rootView;
+  }
+
+  @Override
+  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    if (searchViewType == Config.WEB_SEARCH_TAB) {
+      adapter = new WebSearchListAdapter(new ArrayList<>(), getContext(), ((BaseActivity) getActivity()).getNavigationController());
+    } else {
+      adapter = new ImageSearchListAdapter(new ArrayList<>(), getContext());
+    }
+
+    recyclerView.setAdapter((RecyclerView.Adapter) adapter);
+    presenter = new SearchListPresenter(adapter
+        , ((BaseActivity) getActivity()).getApiController()
+        , ((BaseActivity) getActivity()).getSearchAction()
+        , searchViewType);
+    presenter.attachView(this);
   }
 
 
@@ -109,6 +116,12 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
     presenter.detachView();
     refreshSubject = null;
     loadMoreSubject = null;
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    presenter = null;
   }
 
   @Override

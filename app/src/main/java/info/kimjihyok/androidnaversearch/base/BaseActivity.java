@@ -32,6 +32,8 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    textSearchSubject = PublishSubject.create();
+    closeButtonSubject = PublishSubject.create();
 
     activityComponent = DaggerActivityComponent.builder()
         .applicationComponent(BaseApplication.getApplicationComponent())
@@ -41,37 +43,10 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
   }
 
   @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      onScreenChangeToLandscape();
-    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      onScreenChangeToPortrait();
-    }
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-    textSearchSubject = PublishSubject.create();
-    closeButtonSubject = PublishSubject.create();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
+  protected void onDestroy() {
+    super.onDestroy();
     textSearchSubject = null;
     closeButtonSubject = null;
-  }
-
-  @Override
-  public Observable<String> textSearchObservable() {
-    return textSearchSubject;
-  }
-
-  @Override
-  public Observable<Boolean> clearSearchObservable() {
-    return closeButtonSubject;
   }
 
   @Override
@@ -103,13 +78,19 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
     return super.onCreateOptionsMenu(menu);
   }
 
-  protected abstract void onScreenChangeToLandscape();
-
-  protected abstract void onScreenChangeToPortrait();
+  @Override
+  public Observable<String> textSearchObservable() {
+    return textSearchSubject;
+  }
 
   @Override
   public Observable<String> getCurrentString() {
     return Observable.defer(() -> Observable.just(searchViewAndroidActionBar.getQuery().toString()));
+  }
+
+  @Override
+  public Observable<Boolean> clearSearchObservable() {
+    return closeButtonSubject;
   }
 
   public SearchAction getSearchAction() {

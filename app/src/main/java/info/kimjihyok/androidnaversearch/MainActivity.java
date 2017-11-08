@@ -30,16 +30,4 @@ public class MainActivity extends BaseActivity {
     viewPager.setAdapter(new TabsPagerAdapter(getSupportFragmentManager()));
     tabs.setupWithViewPager(viewPager);
   }
-
-
-  @Override
-  protected void onScreenChangeToLandscape() {
-
-  }
-
-  @Override
-  protected void onScreenChangeToPortrait() {
-
-  }
-
 }
