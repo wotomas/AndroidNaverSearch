@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -25,6 +29,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.0.0-beta1'
+    compile 'com.android.support:design:26.0.0-beta1'
+
     testCompile 'junit:junit:4.12'
 
     compile "com.google.dagger:dagger:2.9"
@@ -42,4 +48,10 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.facebook.stetho:stetho:1.4.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+    compile 'q.rorbin:VerticalTabLayout:1.2.4'
+
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
