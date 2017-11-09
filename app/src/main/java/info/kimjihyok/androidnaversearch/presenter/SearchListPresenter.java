@@ -38,6 +38,9 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
   }
 
   public SearchListPresenter(ListInterface listInterface, ApiController apiController, SearchAction searchAction, int currentSearchMode) {
+    if (currentSearchMode != Config.WEB_SEARCH_TAB && currentSearchMode != Config.IMAGE_SEARCH_TAB) {
+      throw new IllegalStateException("Search Mode parameter is not initialized correctly");
+    }
     this.listInterface = listInterface;
     this.apiController = apiController;
     this.searchAction = searchAction;
