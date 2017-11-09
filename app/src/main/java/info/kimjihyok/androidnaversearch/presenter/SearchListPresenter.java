@@ -1,14 +1,11 @@
 package info.kimjihyok.androidnaversearch.presenter;
 
-import android.util.Log;
-
-import info.kimjihyok.androidnaversearch.BuildConfig;
 import info.kimjihyok.androidnaversearch.Config;
+import info.kimjihyok.androidnaversearch.Util;
 import info.kimjihyok.androidnaversearch.adapter.ListInterface;
 import info.kimjihyok.androidnaversearch.base.BasePresenter;
 import info.kimjihyok.androidnaversearch.base.SearchAction;
 import info.kimjihyok.androidnaversearch.controller.ApiController;
-import info.kimjihyok.androidnaversearch.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -38,6 +35,9 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
   }
 
   public SearchListPresenter(ListInterface listInterface, ApiController apiController, SearchAction searchAction, int currentSearchMode) {
+    if (currentSearchMode != Config.WEB_SEARCH_TAB && currentSearchMode != Config.IMAGE_SEARCH_TAB) {
+      throw new IllegalStateException("Search Mode parameter is not initialized correctly");
+    }
     this.listInterface = listInterface;
     this.apiController = apiController;
     this.searchAction = searchAction;
@@ -71,7 +71,6 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
             }, onError -> {
               view.showRefreshSpinner(false);
               view.showToast("Error!");
-              if (BuildConfig.DEBUG) Log.e(TAG, "attachView() ", onError);
             }));
 
 
@@ -90,10 +89,7 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
             .flatMap(searchResult -> Observable.fromIterable(searchResult.getItems()))
             .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(onNext -> listInterface.add(onNext), onError -> {
-              view.showToast("Error!");
-              if (BuildConfig.DEBUG) Log.e(TAG, "attachView() ", onError);
-            }));
+            .subscribe(onNext -> listInterface.add(onNext), onError -> view.showToast("Error!")));
   }
 
   @Override

@@ -65,6 +65,9 @@ public class ImageResult implements Parcelable {
     this.imageWidth = String.valueOf(imageWidth);
   }
 
+  public ImageResult() {
+  }
+
   // Parcelling part
   public ImageResult(Parcel in){
     String[] data = new String[5];
