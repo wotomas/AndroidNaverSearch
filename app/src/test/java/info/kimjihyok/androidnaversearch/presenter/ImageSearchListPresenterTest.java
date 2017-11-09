@@ -7,6 +7,10 @@ import info.kimjihyok.androidnaversearch.Config;
 import info.kimjihyok.androidnaversearch.controller.model.ImageResult;
 import io.reactivex.Observable;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,14 +64,35 @@ public class ImageSearchListPresenterTest extends BaseSearchListPresenterTest<Im
     verify(view, times(1)).showRefreshSpinner(false);
   }
 
-//  @Test
-//  public void givenValidQueryText_whenUserPullsToRefresh_shouldCallImageSearchAPI() throws Exception {
-//    when(view.getQueryText()).thenReturn(Observable.just(VALID_QUERY));
-//    presenter.attachView(view);
-//
-//    pullToRefreshObservable.onNext(true);
-//
-//    verify(apiController, times(1)).getImageSearchList();
-//  }
+  @Test
+  public void whenUserScrollReachesEnd_shouldCallMoreApiAndUpdate() throws Exception {
+    when(view.getQueryText()).thenReturn(Observable.just(VALID_QUERY));
+    presenter.attachView(view);
+
+    loadMoreObservable.onNext(1);
+
+    verify(apiController, times(1)).getImageSearchList(anyString(), anyInt(), anyInt());
+    verify(listInterface, atLeastOnce()).add(any(ImageResult.class));
+  }
+
+  @Test
+  public void givenValidQueryText_whenUserPullsToRefresh_shouldCallImageSearchAPI() throws Exception {
+    when(view.getQueryText()).thenReturn(Observable.just(VALID_QUERY));
+    presenter.attachView(view);
+
+    pullToRefreshObservable.onNext(true);
+
+    verify(apiController, times(1)).getImageSearchList(anyString(), anyInt(), anyInt());
+  }
+
+  @Test
+  public void givenInValidQueryText_whenUserPullsToRefresh_shouldStopSpinnerAndShowErrorToast() throws Exception {
+    when(view.getQueryText()).thenReturn(Observable.just(VALID_QUERY));
+    presenter.attachView(view);
+
+    pullToRefreshObservable.onNext(true);
+
+    verify(listInterface, atLeastOnce()).add(any(ImageResult.class));
+  }
 
 }
