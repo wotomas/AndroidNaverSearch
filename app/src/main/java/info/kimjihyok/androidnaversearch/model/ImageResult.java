@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch.controller.model;
+package info.kimjihyok.androidnaversearch.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

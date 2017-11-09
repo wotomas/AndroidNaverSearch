@@ -118,7 +118,8 @@ public class SearchListFragment extends Fragment implements SwipeRefreshLayout.O
       presenter = new SearchListPresenter(adapter
           , ((BaseActivity) getActivity()).getApiController()
           , ((BaseActivity) getActivity()).getSearchAction()
-          , searchViewType);
+          , searchViewType
+          , ((BaseActivity) getActivity()).getRequeryController());
     }
 
     presenter.attachView(this);

@@ -54,4 +54,8 @@ dependencies {
 
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    compile 'io.requery:requery:1.4.0'
+    compile 'io.requery:requery-android:1.4.0'
+    annotationProcessor 'io.requery:requery-processor:1.4.0'
 }

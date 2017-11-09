@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 import info.kimjihyok.androidnaversearch.view.ImageDetailActivity;
-import info.kimjihyok.androidnaversearch.controller.model.ImageResult;
+import info.kimjihyok.androidnaversearch.model.ImageResult;
 
 /**
  * Created by jkimab on 2017. 11. 6..

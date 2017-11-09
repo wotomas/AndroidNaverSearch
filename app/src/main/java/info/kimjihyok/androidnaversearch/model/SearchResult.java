@@ -1,4 +1,4 @@
-package info.kimjihyok.androidnaversearch.controller.model;
+package info.kimjihyok.androidnaversearch.model;
 
 import com.google.gson.annotations.SerializedName;
 

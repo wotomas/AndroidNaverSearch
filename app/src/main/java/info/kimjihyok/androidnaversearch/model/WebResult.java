@@ -1,20 +1,34 @@
-package info.kimjihyok.androidnaversearch.controller.model;
+package info.kimjihyok.androidnaversearch.model;
 
 import com.google.gson.annotations.SerializedName;
+
+import io.requery.Entity;
+import io.requery.Generated;
+import io.requery.Key;
+import io.requery.ManyToOne;
+import io.requery.Persistable;
 
 /**
  * Created by jihyokkim on 2017. 11. 8..
  */
 
-public class WebResult {
+@Entity
+public class WebResult implements Persistable {
+  @Key
+  @Generated
+  long id;
+
   @SerializedName("title")
-  private String title;
+  String title;
 
   @SerializedName("link")
-  private String link;
+  String link;
 
   @SerializedName("description")
-  private String description;
+  String description;
+
+  @ManyToOne
+  WebQuery queryList;
 
   public String getTitle() {
     return title;

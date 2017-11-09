@@ -4,15 +4,17 @@ import android.util.Log;
 
 import info.kimjihyok.androidnaversearch.BuildConfig;
 import info.kimjihyok.androidnaversearch.Config;
+import info.kimjihyok.androidnaversearch.Util;
 import info.kimjihyok.androidnaversearch.adapter.ListInterface;
 import info.kimjihyok.androidnaversearch.base.BasePresenter;
 import info.kimjihyok.androidnaversearch.base.SearchAction;
 import info.kimjihyok.androidnaversearch.controller.ApiController;
-import info.kimjihyok.androidnaversearch.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import io.requery.Persistable;
+import io.requery.reactivex.ReactiveEntityStore;
 
 /**
  * Created by jihyokkim on 2017. 11. 8..
@@ -20,7 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 public class SearchListPresenter implements BasePresenter<SearchListPresenter.View> {
   private static final String TAG = "SearchListPresenter";
 
-
+  private ReactiveEntityStore<Persistable> requeryController;
   private CompositeDisposable compositeDisposable;
   private ListInterface listInterface;
   private ApiController apiController;
@@ -37,32 +39,39 @@ public class SearchListPresenter implements BasePresenter<SearchListPresenter.Vi
     void showToast(String text);
   }
 
-  public SearchListPresenter(ListInterface listInterface, ApiController apiController, SearchAction searchAction, int currentSearchMode) {
+  public SearchListPresenter(ListInterface listInterface
+      , ApiController apiController
+      , SearchAction searchAction
+      , int currentSearchMode
+      , ReactiveEntityStore<Persistable> requeryController) {
     this.listInterface = listInterface;
     this.apiController = apiController;
     this.searchAction = searchAction;
     this.currentSearchMode = currentSearchMode;
+    this.requeryController = requeryController;
   }
 
   @Override
   public void attachView(View view) {
     compositeDisposable = new CompositeDisposable();
 
+    // search and refresh
     compositeDisposable.add(
         Observable.merge(
-            searchAction.textSearchObservable().doOnNext(view::storeLastQueryTextInMemory),
-            view.onPullToRefreshGesture().flatMap(v -> view.getQueryText()))
+                searchAction.textSearchObservable().doOnNext(view::storeLastQueryTextInMemory),
+                view.onPullToRefreshGesture().flatMap(v -> view.getQueryText()))
             .doOnNext(v -> listInterface.clear())
             .doOnNext(query -> view.showRefreshSpinner(!Util.isEmpty(query)))
             .filter(query -> !Util.isEmpty(query))
             .flatMap(query -> {
               if (currentSearchMode == Config.WEB_SEARCH_TAB) {
-                return apiController.getWebSearchList(query, 20, 1);
+                return apiController.getWebSearchList(query, 20, 1)
+                    .flatMap(webResultSearchResult -> Observable.fromIterable(webResultSearchResult.getItems()));
               } else {
-                return apiController.getImageSearchList(query, 40, 1);
+                return apiController.getImageSearchList(query, 40, 1)
+                    .flatMap(imageResultSearchResult -> Observable.fromIterable(imageResultSearchResult.getItems()));
               }
             })
-            .flatMap(webSearchResult -> Observable.fromIterable(webSearchResult.getItems()))
             .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(onNext -> {

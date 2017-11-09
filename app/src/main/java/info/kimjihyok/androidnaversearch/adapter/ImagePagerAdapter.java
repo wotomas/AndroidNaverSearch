@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import info.kimjihyok.androidnaversearch.R;
-import info.kimjihyok.androidnaversearch.controller.model.ImageResult;
+import info.kimjihyok.androidnaversearch.model.ImageResult;
 
 /**
  * Created by jkimab on 2017. 11. 8..

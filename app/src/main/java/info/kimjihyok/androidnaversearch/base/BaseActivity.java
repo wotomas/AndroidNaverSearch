@@ -17,10 +17,13 @@ import info.kimjihyok.androidnaversearch.dagger.component.DaggerActivityComponen
 import info.kimjihyok.androidnaversearch.dagger.module.ActivityModule;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
+import io.requery.Persistable;
+import io.requery.reactivex.ReactiveEntityStore;
 
 public abstract class BaseActivity extends AppCompatActivity implements SearchAction {
   @Inject ApiController apiController;
   @Inject NavigationController navigationController;
+  @Inject ReactiveEntityStore<Persistable> data;
 
   private ActivityComponent activityComponent;
   private SearchView searchViewAndroidActionBar;
@@ -34,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
     closeButtonSubject = PublishSubject.create();
 
     activityComponent = DaggerActivityComponent.builder()
-        .applicationComponent(BaseApplication.getApplicationComponent())
+        .applicationComponent(((BaseApplication) getApplication()).getApplicationComponent())
         .activityModule(new ActivityModule(this))
         .build();
     activityComponent.inject(this);
@@ -96,5 +99,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchAc
 
   public ApiController getApiController() {
     return apiController;
+  }
+
+  public ReactiveEntityStore<Persistable> getRequeryController() {
+    return data;
   }
 }

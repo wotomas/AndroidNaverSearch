@@ -15,7 +15,7 @@ import butterknife.ButterKnife;
 import info.kimjihyok.androidnaversearch.R;
 import info.kimjihyok.androidnaversearch.controller.NavigationController;
 import info.kimjihyok.androidnaversearch.Util;
-import info.kimjihyok.androidnaversearch.controller.model.WebResult;
+import info.kimjihyok.androidnaversearch.model.WebResult;
 
 /**
  * Created by jkimab on 2017. 11. 8..

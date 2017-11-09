@@ -3,9 +3,9 @@ package info.kimjihyok.androidnaversearch.controller;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import info.kimjihyok.androidnaversearch.controller.model.ImageResult;
-import info.kimjihyok.androidnaversearch.controller.model.SearchResult;
-import info.kimjihyok.androidnaversearch.controller.model.WebResult;
+import info.kimjihyok.androidnaversearch.model.ImageResult;
+import info.kimjihyok.androidnaversearch.model.SearchResult;
+import info.kimjihyok.androidnaversearch.model.WebResult;
 import info.kimjihyok.androidnaversearch.controller.retrofit.NaverSearchAPI;
 import io.reactivex.Observable;
 
