@@ -1,5 +1,5 @@
 # NaverSearch Android Client
-![Travis-ci](https://api.travis-ci.org/wotomas/AndroidNaverSearch.svg)
+![Circle-ci](https://circleci.com/gh/wotomas/AndroidNaverSearch.png?circle-token=:circle-token)
 
 
 Android Client for Naver Search API (Web Search and Image Search)
